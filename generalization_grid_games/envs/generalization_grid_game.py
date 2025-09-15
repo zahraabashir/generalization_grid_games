@@ -17,7 +17,7 @@ class GeneralizationGridGame(gym.Env):
     metadata = {'render.modes': ['rgb_array'], 'video.frames_per_second' : 2}
     fig_scale = 1.
 
-    def __init__(self, layout, interactive=False, record_video=False, video_out_path='out.mp4'):
+    def __init__(self, layout, interactive=False, record_video=True, video_out_path='out.mp4'):
         layout = np.array(layout, dtype=object)
 
         self.initial_layout = layout.copy()
@@ -306,5 +306,3 @@ def create_gym_envs(base_class, layouts, global_context):
     for i, layout in enumerate(layouts):
         gym_env = GymEnvFactory(base_class, i, layout)
         global_context[gym_env.__name__] = gym_env
-
-
