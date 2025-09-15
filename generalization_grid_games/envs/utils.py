@@ -6,24 +6,11 @@ def get_asset_path(asset_name):
     asset_dir_path = os.path.join(dir_path, 'assets')
     return os.path.join(asset_dir_path, asset_name)
 
-# def fig2data(fig):
-#     fig.canvas.draw()
-#     data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
-#     data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-#     return data
-
-# generalization_grid_games/envs/utils.py
-import numpy as np
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-
 def fig2data(fig):
-    canvas = FigureCanvasAgg(fig)   # ensure Agg canvas
-    canvas.draw()
-    w, h = canvas.get_width_height()
-    # rgb bytes → uint8 array
-    data = np.frombuffer(canvas.tostring_rgb(), dtype=np.uint8)
-    return data.reshape(h, w, 3)
-
+    fig.canvas.draw()
+    data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+    data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+    return data
 
 def run_random_agent_demo(env_cls, outdir=None, max_num_steps=10):
     if outdir is None:
