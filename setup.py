@@ -10,5 +10,10 @@ setup(
             "envs/assets/*",      # images like matchstick.png
         ]
     },
-    install_requires=["gym>=0.26", "matplotlib", "Pillow"],
+    install_requires=[
+        "gym>=0.26", 
+        "matplotlib", 
+        "Pillow", 
+        "prpl_utils @ git+https://github.com/Princeton-Robot-Planning-and-Learning/prpl-utils.git"
+        ],
 )
