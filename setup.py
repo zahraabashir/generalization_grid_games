@@ -14,6 +14,6 @@ setup(
         "gym>=0.26", 
         "matplotlib", 
         "Pillow", 
-        "prpl_utils @ git+https://github.com/Princeton-Robot-Planning-and-Learning/prpl-mono.git@2fb2da808c5c3224dd9acb2826916102592926ce#subdirectory=prpl-utils"
+        "prpl_utils @ git+https://github.com/Princeton-Robot-Planning-and-Learning/prpl-mono.git@2d89490#subdirectory=prpl-utils"
         ],
 )
