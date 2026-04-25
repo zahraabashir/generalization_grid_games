@@ -30,5 +30,8 @@ for i in range(20):
         id='ReachForTheStar{}-v0'.format(i),
         entry_point='generalization_grid_games.envs:ReachForTheStarGymEnv{}'.format(i),
     )
-
-
+for i in range(20):
+    register(
+        id='ClimbToTheBlock{}-v0'.format(i),
+        entry_point='generalization_grid_games.envs:ClimbToTheBlockGymEnv{}'.format(i),
+    )
