@@ -19,7 +19,7 @@ pip install imageio
 import gym
 import generalization_grid_games
 
-for base_class_name in ["TwoPileNim", "CheckmateTactic", "Chase", "StopTheFall", "ReachForTheStar"]:
+for base_class_name in ["TwoPileNim", "CheckmateTactic", "Chase", "StopTheFall", "ReachForTheStar", "ClimbToTheBlock"]:
     for task_instance in range(20):
         env_name = "{}{}-v0".format(base_class_name, task_instance)
         env = gym.make(env_name)
@@ -38,4 +38,7 @@ python demos/checkmate_tactic_demo.py
 python demos/chase_demo.py
 python demos/stop_the_fall_demo.py
 python demos/reach_for_the_star_demo.py
+python demos/climb_to_the_block_demo.py
 ```
+
+`ClimbToTheBlock` reuses the Reach For The Star object vocabulary and board sizes. Its goal is the single non-ground `DRAWN` cell in the initial layout, and the episode ends when the agent stands on top of that cell. The `STAR` token is present as a distractor only.
