@@ -49,19 +49,24 @@ class ClimbToTheBlock(GeneralizationGridGame):
 
         if not non_ground_positions:
             raise InvalidState(
-                "ClimbToTheBlock expects a non-ground horizontal DRAWN line to act as the goal."
+                "ClimbToTheBlock expects a non-ground vertical DRAWN line to act as the goal."
             )
 
-        goal_r = min(r for r, _ in non_ground_positions)
+        goal_c = non_ground_positions[0][1]
         goal_positions = sorted(
             (r, c) for r, c in non_ground_positions
-            if r == goal_r
+            if c == goal_c
         )
-        goal_cols = [c for _, c in goal_positions]
+        goal_rows = [r for r, _ in goal_positions]
 
-        if goal_cols != list(range(goal_cols[0], goal_cols[-1] + 1)):
+        if len(goal_positions) != len(non_ground_positions):
             raise InvalidState(
-                "ClimbToTheBlock expects the top non-ground DRAWN cells to form one horizontal line."
+                "ClimbToTheBlock expects all non-ground DRAWN cells to share one column."
+            )
+
+        if goal_rows != list(range(goal_rows[0], goal_rows[-1] + 1)):
+            raise InvalidState(
+                "ClimbToTheBlock expects the non-ground DRAWN cells to form one vertical line."
             )
 
         return frozenset(goal_positions)
@@ -130,7 +135,12 @@ class ClimbToTheBlock(GeneralizationGridGame):
                 for c in range(width):
                     token = layout[r, c]
 
-                    if (token == AGENT or token == DRAWN) and (layout[r + 1, c] == EMPTY):
+                    is_goal_block = token == DRAWN and (r, c) in self.goal_positions
+                    if (
+                        (token == AGENT or token == DRAWN)
+                        and not is_goal_block
+                        and layout[r + 1, c] == EMPTY
+                    ):
                         layout[r, c] = EMPTY
                         layout[r + 1, c] = token
                         something_moved = True
@@ -228,17 +238,17 @@ def create_random_layout():
     width = stairs_dist_from_right + 2 * stairs_height + agent_dist_from_stairs + agent_dist_from_left
     layout = np.full((height, width), EMPTY, dtype=object)
 
-    platform_top_r = stairs_dist_from_top + 1
-    platform_left_c = agent_dist_from_left + agent_dist_from_stairs + stairs_height
+    block_top_r = stairs_dist_from_top + 1
+    block_c = agent_dist_from_left + agent_dist_from_stairs + stairs_height
     agent_r = height - 3
     agent_c = agent_dist_from_left
 
-    star_r = platform_top_r - 1
-    star_c = width - 1 - platform_left_c
-    if star_c >= platform_left_c:
-        star_c = platform_left_c - 1
+    star_r = block_top_r - 1
+    star_c = width - 1 - block_c
+    if star_c >= block_c:
+        star_c = block_c - 1
 
-    layout[platform_top_r:height - 2, platform_left_c:] = DRAWN
+    layout[block_top_r:height - 2, block_c] = DRAWN
     layout[star_r, star_c] = STAR
     layout[agent_r, agent_c] = AGENT
 

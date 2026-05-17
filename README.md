@@ -38,7 +38,7 @@ python demos/checkmate_tactic_demo.py
 python demos/chase_demo.py
 python demos/stop_the_fall_demo.py
 python demos/reach_for_the_star_demo.py
-python demos/climb_to_the_block_demo.py
+python demos/climb_the_block_demo.py
 ```
 
-`ClimbToTheBlock` reuses the Reach For The Star object vocabulary and board sizes. Its goal is the top horizontal line of the initial non-ground `DRAWN` platform, and the episode ends when the agent stands on top of any cell in that line. The `STAR` token is present as a distractor only.
+`ClimbToTheBlock` reuses the Reach For The Star object vocabulary and board sizes. Its goal is the initial non-ground vertical `DRAWN` block line, and the episode ends when the agent stands on top of any cell in that line. The `STAR` token is present as a distractor only.
