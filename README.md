@@ -41,4 +41,4 @@ python demos/reach_for_the_star_demo.py
 python demos/climb_to_the_block_demo.py
 ```
 
-`ClimbToTheBlock` reuses the Reach For The Star object vocabulary and board sizes. Its goal is the single non-ground `DRAWN` cell in the initial layout, and the episode ends when the agent stands on top of that cell. The `STAR` token is present as a distractor only.
+`ClimbToTheBlock` reuses the Reach For The Star object vocabulary and board sizes. Its goal is the top horizontal line of the initial non-ground `DRAWN` platform, and the episode ends when the agent stands on top of any cell in that line. The `STAR` token is present as a distractor only.

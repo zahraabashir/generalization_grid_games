@@ -33,26 +33,38 @@ class ClimbToTheBlock(GeneralizationGridGame):
     fig_scale = 1.2
 
     def __init__(self, layout, *args, **kwargs):
-        self.goal_position = self.find_goal_position(layout)
+        self.goal_positions = self.find_goal_positions(layout)
         super(ClimbToTheBlock, self).__init__(layout, *args, **kwargs)
 
     @staticmethod
-    def find_goal_position(layout):
+    def find_goal_positions(layout):
         layout = np.array(layout, dtype=object)
         height, _ = layout.shape
         candidate_positions = np.argwhere(layout == DRAWN)
 
-        goal_positions = [
+        non_ground_positions = [
             (r, c) for r, c in candidate_positions
             if r < height - 2
         ]
 
-        if len(goal_positions) != 1:
+        if not non_ground_positions:
             raise InvalidState(
-                "ClimbToTheBlock expects exactly one non-ground DRAWN cell to act as the goal."
+                "ClimbToTheBlock expects a non-ground horizontal DRAWN line to act as the goal."
             )
 
-        return goal_positions[0]
+        goal_r = min(r for r, _ in non_ground_positions)
+        goal_positions = sorted(
+            (r, c) for r, c in non_ground_positions
+            if r == goal_r
+        )
+        goal_cols = [c for _, c in goal_positions]
+
+        if goal_cols != list(range(goal_cols[0], goal_cols[-1] + 1)):
+            raise InvalidState(
+                "ClimbToTheBlock expects the top non-ground DRAWN cells to form one horizontal line."
+            )
+
+        return frozenset(goal_positions)
 
     def transition(self, layout, action):
         r, c = action
@@ -80,8 +92,10 @@ class ClimbToTheBlock(GeneralizationGridGame):
 
     def compute_done(self, layout):
         agent_r, agent_c = np.argwhere(layout == AGENT)[0]
-        goal_r, goal_c = self.goal_position
-        return (agent_r == goal_r - 1) and (agent_c == goal_c)
+        return any(
+            (agent_r == goal_r - 1) and (agent_c == goal_c)
+            for goal_r, goal_c in self.goal_positions
+        )
 
     @staticmethod
     def step_move_in_direction(layout, direction):
@@ -115,9 +129,6 @@ class ClimbToTheBlock(GeneralizationGridGame):
             for r in range(height - 2, -1, -1):
                 for c in range(width):
                     token = layout[r, c]
-
-                    if (r, c) == self.goal_position:
-                        continue
 
                     if (token == AGENT or token == DRAWN) and (layout[r + 1, c] == EMPTY):
                         layout[r, c] = EMPTY
@@ -217,17 +228,17 @@ def create_random_layout():
     width = stairs_dist_from_right + 2 * stairs_height + agent_dist_from_stairs + agent_dist_from_left
     layout = np.full((height, width), EMPTY, dtype=object)
 
-    goal_r = stairs_dist_from_top + 1
-    goal_c = agent_dist_from_left + agent_dist_from_stairs + stairs_height
+    platform_top_r = stairs_dist_from_top + 1
+    platform_left_c = agent_dist_from_left + agent_dist_from_stairs + stairs_height
     agent_r = height - 3
     agent_c = agent_dist_from_left
 
-    star_r = goal_r - 1
-    star_c = width - 1 - goal_c
-    if star_r == goal_r and star_c == goal_c:
-        star_c = max(0, star_c - 1)
+    star_r = platform_top_r - 1
+    star_c = width - 1 - platform_left_c
+    if star_c >= platform_left_c:
+        star_c = platform_left_c - 1
 
-    layout[goal_r, goal_c] = DRAWN
+    layout[platform_top_r:height - 2, platform_left_c:] = DRAWN
     layout[star_r, star_c] = STAR
     layout[agent_r, agent_c] = AGENT
 
