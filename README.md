@@ -19,7 +19,7 @@ pip install imageio
 import gym
 import generalization_grid_games
 
-for base_class_name in ["TwoPileNim", "CheckmateTactic", "Chase", "StopTheFall", "ReachForTheStar", "ClimbToTheBlock"]:
+for base_class_name in ["TwoPileNim", "CheckmateTactic", "Chase", "StopTheFall", "ReachForTheStar", "ClimbToTheBlock", "ReachTheCorner"]:
     for task_instance in range(20):
         env_name = "{}{}-v0".format(base_class_name, task_instance)
         env = gym.make(env_name)
@@ -39,12 +39,18 @@ python demos/chase_demo.py
 python demos/stop_the_fall_demo.py
 python demos/reach_for_the_star_demo.py
 python demos/climb_the_block_demo.py
+python demos/reach_the_corner_demo.py
 ```
 
 ### Expert Policy Videos
 ```
 python demos/climb_the_block_expert_demo.py
 open demos/out/expert_demo.mp4
+
+python demos/reach_the_corner_expert_demo.py
+open demos/out/reach_the_corner_expert_demo.mp4
 ```
 
 `ClimbToTheBlock` reuses the Reach For The Star board sizes. Its goal is the initial non-ground vertical `DRAWN` block line, and the episode ends when the agent stands on top of any cell in that line.
+
+`ReachTheCorner` starts with the agent facing the nearest side corner. Its goal is the top corner on that side, and its expert builds a staircase from the corner outward before moving the agent up to the top.

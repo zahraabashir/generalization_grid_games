@@ -5,3 +5,4 @@ from .stop_the_fall import *
 from .reach_for_the_star import *
 from .climb_to_the_block import *
 from .key_before_the_star import *
+from .reach_the_corner import *
