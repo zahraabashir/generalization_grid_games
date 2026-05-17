@@ -9,17 +9,15 @@ import numpy as np
 
 EMPTY = 'empty'
 AGENT = 'agent'
-STAR = 'star'
 DRAWN = 'drawn'
 LEFT_ARROW = 'left_arrow'
 RIGHT_ARROW = 'right_arrow'
-ALL_TOKENS = [EMPTY, AGENT, DRAWN, STAR, LEFT_ARROW, RIGHT_ARROW]
+ALL_TOKENS = [EMPTY, AGENT, DRAWN, LEFT_ARROW, RIGHT_ARROW]
 
 
 TOKEN_IMAGES = {
     AGENT: plt.imread(get_asset_path('robot.png')),
     DRAWN: plt.imread(get_asset_path('brown_block.jpg')),
-    STAR: plt.imread(get_asset_path('star.png')),
 }
 
 
@@ -113,10 +111,10 @@ class ClimbToTheBlock(GeneralizationGridGame):
 
         neighbor_cell = layout[r, c + direction]
 
-        if neighbor_cell in [EMPTY, STAR]:
+        if neighbor_cell == EMPTY:
             next_r, next_c = r, c + direction
 
-        elif neighbor_cell == DRAWN and layout[r - 1, c + direction] in [EMPTY, STAR]:
+        elif neighbor_cell == DRAWN and layout[r - 1, c + direction] == EMPTY:
             next_r, next_c = r - 1, c + direction
 
         else:
@@ -243,13 +241,7 @@ def create_random_layout():
     agent_r = height - 3
     agent_c = agent_dist_from_left
 
-    star_r = block_top_r - 1
-    star_c = width - 1 - block_c
-    if star_c >= block_c:
-        star_c = block_c - 1
-
     layout[block_top_r:height - 2, block_c] = DRAWN
-    layout[star_r, star_c] = STAR
     layout[agent_r, agent_c] = AGENT
 
     if rng.uniform() > 0.5:
