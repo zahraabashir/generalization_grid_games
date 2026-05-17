@@ -41,4 +41,10 @@ python demos/reach_for_the_star_demo.py
 python demos/climb_the_block_demo.py
 ```
 
+### Expert Policy Videos
+```
+python demos/climb_the_block_expert_demo.py
+open demos/out/expert_demo.mp4
+```
+
 `ClimbToTheBlock` reuses the Reach For The Star object vocabulary and board sizes. Its goal is the initial non-ground vertical `DRAWN` block line, and the episode ends when the agent stands on top of any cell in that line. The `STAR` token is present as a distractor only.

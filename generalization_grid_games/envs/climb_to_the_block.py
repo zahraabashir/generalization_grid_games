@@ -264,3 +264,42 @@ def create_random_layout():
 
 layouts = [create_random_layout() for _ in range(num_layouts)]
 create_gym_envs(ClimbToTheBlock, layouts, globals())
+
+
+def expert_plan(layout):
+    layout = np.array(layout, dtype=object)
+    height, width = layout.shape
+    agent_r, agent_c = np.argwhere(layout == AGENT)[0]
+    goal_positions = ClimbToTheBlock.find_goal_positions(layout)
+    goal_top_r = min(r for r, _ in goal_positions)
+    goal_c = next(iter({c for _, c in goal_positions}))
+    move_direction = 1 if agent_c < goal_c else -1
+    vertical_steps = agent_r - goal_top_r
+
+    outer_stair_c = goal_c - move_direction * vertical_steps
+    before_stair_c = outer_stair_c - move_direction
+
+    if not 0 <= before_stair_c < width:
+        raise InvalidState(
+            "ClimbToTheBlock expert needs more horizontal space to build a staircase."
+        )
+
+    actions = []
+    temp_layout = layout.copy()
+    env = ClimbToTheBlock(layout)
+
+    for step_from_goal in range(1, vertical_steps + 1):
+        c = goal_c - move_direction * step_from_goal
+        top_block_r = goal_top_r + step_from_goal
+
+        for _ in range(height - 2 - top_block_r):
+            action = (top_block_r, c)
+            actions.append(action)
+            temp_layout = env.transition(temp_layout, action)
+
+    arrow = RIGHT_ARROW if move_direction == 1 else LEFT_ARROW
+    arrow_action = tuple(np.argwhere(temp_layout == arrow)[0])
+    actions.extend([arrow_action] * abs(before_stair_c - agent_c))
+    actions.extend([arrow_action] * (vertical_steps + 1))
+
+    return actions

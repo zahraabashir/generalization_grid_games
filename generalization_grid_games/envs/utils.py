@@ -20,8 +20,8 @@ def fig2data(fig: plt.Figure) -> Image:
 def run_random_agent_demo(env_cls, outdir=None, max_num_steps=10):
     if outdir is None:
         outdir = "/tmp/{}".format(env_cls.__name__)
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
 
     video_path = os.path.join(outdir, 'random_demo.mp4')
     env = env_cls(interactive=False, record_video=True, video_out_path=video_path)
@@ -37,3 +37,45 @@ def run_random_agent_demo(env_cls, outdir=None, max_num_steps=10):
 
     env.close()
 
+
+def run_policy_demo(env_cls, policy, outdir=None, max_num_steps=100, video_name='policy_demo.mp4'):
+    if outdir is None:
+        outdir = "/tmp/{}".format(env_cls.__name__)
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    video_path = os.path.join(outdir, video_name)
+    env = env_cls(interactive=False, record_video=True, video_out_path=video_path)
+    observation = env.reset()
+
+    for _ in range(max_num_steps):
+        action = policy(observation)
+        observation, _, done, _ = env.step(action)
+        if done:
+            break
+
+    env.close()
+    return video_path
+
+
+def run_plan_demo(env_cls, planner, outdir=None, video_name='expert_demo.mp4'):
+    if outdir is None:
+        outdir = "/tmp/{}".format(env_cls.__name__)
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    video_path = os.path.join(outdir, video_name)
+    env = env_cls(interactive=False, record_video=True, video_out_path=video_path)
+    observation = env.reset()
+    done = env.compute_done(observation)
+
+    for action in planner(observation):
+        observation, _, done, _ = env.step(action)
+        if done:
+            break
+
+    env.close()
+    if not done:
+        raise RuntimeError("Plan did not solve {}.".format(env_cls.__name__))
+
+    return video_path
